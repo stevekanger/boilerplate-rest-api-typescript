@@ -5,7 +5,7 @@ Simple authentication rest api with express and mongoose. Built with typescript.
 ## Installation
 
 ```bash
-git clone https://github.com/stevekanger/boilerplate-rest-api-typescript.git
+git clone https://github.com/stevekanger/rest-api-boilerplate-typescript.git
 ```
 
 ```bash
