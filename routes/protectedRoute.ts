@@ -1,12 +1,9 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import checkAuth from './middleware/checkAuth'
+import protectedController from '../controllers/protected/protectedController'
 
 const router = express.Router()
 
-router.get('/', checkAuth, (req: Request, res: Response) => {
-  res.status(200).json({
-    msg: `You have access to this protected route`,
-  })
-})
+router.get('/', checkAuth, protectedController)
 
 export default router
