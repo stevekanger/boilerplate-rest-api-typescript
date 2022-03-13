@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import User from '../../models/user'
+import User from '../../models/User'
 
-const setNewPassController = async (req: Request, res: Response) => {
+const passwordResetController = async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body
 
@@ -14,10 +14,7 @@ const setNewPassController = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email: email })
 
-    if (!user)
-      return res
-        .status(400)
-        .json({ msg: 'Cannot find user with email of ' + email })
+    if (!user) return res.sendStatus(400)
 
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
@@ -29,11 +26,9 @@ const setNewPassController = async (req: Request, res: Response) => {
     return res
       .status(200)
       .json({ msg: 'New password saved you may now log in' })
-  } catch (err) {
-    return res.status(400).json({
-      msg: 'There was an error and we could not save your new password',
-    })
+  } catch (error) {
+    return res.sendStatus(400)
   }
 }
 
-export default setNewPassController
+export default passwordResetController

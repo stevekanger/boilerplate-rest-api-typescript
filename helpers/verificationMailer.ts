@@ -24,13 +24,13 @@ const verificationMailer = async (
       to: email,
       subject: 'Verification',
       html: `Verify yourself by following the link below<br>
-       <a href="http://localhost:3000/${path}?verificationToken=${token}">Verification</a><br>
+       <a href="http://localhost:3000/${path}?token=${token}">Verification</a><br>
        This link will be active for the next 24 hours.`,
     })
 
     // Preview only available when sending through an Ethereal account
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
-  } catch (err) {
+  } catch (error) {
     throw new Error('Email could not be sent to ' + email)
   }
 }

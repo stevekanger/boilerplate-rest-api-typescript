@@ -1,12 +1,12 @@
 import { Application } from 'express'
-import home from './home'
 import auth from './auth'
-import protectedRoute from './protectedRoute'
+import api from './api'
+import notFound from './notFound'
 
 const routes = (app: Application) => {
-  app.use('/', home)
   app.use('/auth', auth)
-  app.use('/protected', protectedRoute)
+  app.use('/api', api)
+  app.use('*', notFound)
 }
 
 export default routes

@@ -1,10 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import User from '../../models/User'
-import {
-  createAccessToken,
-  createRefreshToken,
-} from '../../helpers/createTokens'
+import { createAccessToken } from '../../helpers/createTokens'
 
 const loginController = async (req: Request, res: Response) => {
   try {
@@ -12,29 +9,20 @@ const loginController = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email: email })
 
-    if (!user || !user.verified)
-      return res.status(401).json({ msg: 'Invalid login attempt' })
+    if (!user || !user.verified) return res.sendStatus(401)
 
     await bcrypt.compare(password, user.password)
 
-    const { accessToken, exp } = createAccessToken()
-    const refreshToken = createRefreshToken()
-
-    res.cookie('refreshToken', refreshToken, {
-      path: '/auth/refresh-tokens',
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-      httpOnly: true,
-    })
+    const { accessToken, accessTokenExp } = createAccessToken(res)
 
     return res.status(200).json({
+      name: user.name,
       accessToken,
-      exp,
+      accessTokenExp,
       msg: 'User successfully logged in',
     })
-  } catch (err) {
-    return res.status(401).json({
-      msg: 'Invalid login attempt',
-    })
+  } catch (error) {
+    return res.sendStatus(401)
   }
 }
 

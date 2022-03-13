@@ -1,33 +1,23 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import {
-  createAccessToken,
-  createRefreshToken,
-} from '../../helpers/createTokens'
+import { createAccessToken } from '../../helpers/createTokens'
 
-const refreshTokensController = async (req: Request, res: Response) => {
+const tokensController = async (req: Request, res: Response) => {
   try {
-    jwt.verify(req.cookies.refreshToken, `${process.env.JWT_SECRET_REFRESH}`)
+    if (!req.cookies.R_TOKEN) return res.sendStatus(401)
 
-    const { accessToken, exp } = createAccessToken()
-    const refreshToken = createRefreshToken()
+    jwt.verify(req.cookies.R_TOKEN, `${process.env.JWT_SECRET_REFRESH}`)
 
-    res.cookie('refreshToken', refreshToken, {
-      path: '/auth/refresh-tokens',
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-      httpOnly: true,
-    })
+    const { accessToken, accessTokenExp } = createAccessToken(res)
 
     return res.status(200).json({
       accessToken,
-      exp,
+      accessTokenExp,
       msg: 'New tokens created successfully',
     })
-  } catch (err) {
-    return res.status(401).json({
-      msg: 'Invalid refresh token',
-    })
+  } catch (error) {
+    return res.sendStatus(401)
   }
 }
 
-export default refreshTokensController
+export default tokensController

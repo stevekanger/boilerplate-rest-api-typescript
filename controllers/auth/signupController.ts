@@ -1,26 +1,27 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import User from '../../models/user'
+import User from '../../models/User'
 import verificationMailer from '../../helpers/verificationMailer'
 import { createVerificationToken } from '../../helpers/createTokens'
+import validateEmail from '../../helpers/validateEmail'
 
-const registerController = async (req: Request, res: Response) => {
+const signupController = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body
 
-    if (!name || !email || !password)
-      return res.status(400).json({ msg: 'Please enter all fields' })
+    if (!name || !email || !password || !validateEmail(email))
+      return res.sendStatus(400)
 
     const user = await User.findOne({ email: email })
 
-    if (user)
-      return res
-        .status(400)
-        .json({ msg: 'User with that email already exists' })
+    if (user) return res.sendStatus(400)
 
     const verificationToken = createVerificationToken(email)
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
+
+    await verificationMailer(email, verificationToken, 'verify')
+
     const newUser = new User({
       name,
       email,
@@ -29,18 +30,14 @@ const registerController = async (req: Request, res: Response) => {
       verificationToken,
     })
 
-    verificationMailer(email, verificationToken, 'verify')
-
     newUser.save()
 
     return res.status(200).json({
       msg: `User was created successfully.  Please check the email you provided to verify your email`,
     })
-  } catch (err) {
-    return res.status(400).json({
-      msg: 'Registration failed',
-    })
+  } catch (error) {
+    return res.sendStatus(400)
   }
 }
 
-export default registerController
+export default signupController

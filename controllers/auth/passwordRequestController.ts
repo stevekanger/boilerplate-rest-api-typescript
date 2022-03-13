@@ -1,20 +1,17 @@
 import { Request, Response } from 'express'
-import User from '../../models/user'
+import User from '../../models/User'
 import verificationMailer from '../../helpers/verificationMailer'
 import { createVerificationToken } from '../../helpers/createTokens'
 
-const requestNewPassController = async (req: Request, res: Response) => {
+const passwordRequestController = async (req: Request, res: Response) => {
   try {
     const { email } = req.body
 
-    if (!email) return res.status(400).json({ msg: 'Please enter an email' })
+    if (!email) return res.sendStatus(400)
 
     const user = await User.findOne({ email: email })
 
-    if (!user)
-      return res.status(400).json({
-        msg: `A user with the email ${email} does not exist on our database`,
-      })
+    if (!user) return res.sendStatus(400)
 
     const verificationToken = createVerificationToken(email)
     verificationMailer(email, verificationToken, 'changepassword')
@@ -22,11 +19,9 @@ const requestNewPassController = async (req: Request, res: Response) => {
     return res.status(200).json({
       msg: `An email was sent to ${email} please check your email for verification`,
     })
-  } catch (err) {
-    return res.status(400).json({
-      msg: 'There was an error with your request',
-    })
+  } catch (error) {
+    return res.sendStatus(400)
   }
 }
 
-export default requestNewPassController
+export default passwordRequestController

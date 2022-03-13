@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 import express from 'express'
 import { connect } from 'mongoose'
 import routes from './routes'
@@ -5,19 +7,18 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 const app = express()
-require('dotenv').config()
 
 connect(`${process.env.MONGO_URI}`)
   .then(() => {
     console.log('Connected To Database')
   })
-  .catch((err) => {
-    console.log('Error Connecting To DataBase', err)
+  .catch((error) => {
+    console.log('Error Connecting To DataBase', error)
   })
 
 app.use(cookieParser())
 app.use(express.json())
-app.use(cors())
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 
 routes(app)
 

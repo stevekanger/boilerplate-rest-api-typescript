@@ -1,23 +1,29 @@
+import { Response } from 'express'
 import jwt from 'jsonwebtoken'
 
 export const createVerificationToken = (email: string) => {
   return jwt.sign({ email }, `${process.env.JWT_SECRET_VERIFICATION}`, {
-    expiresIn: '1d',
+    expiresIn: process.env.JWT_VERIFICATION_LIFESPAN,
   })
 }
 
-export const createAccessToken = () => {
+export const createAccessToken = (res: Response) => {
   const accessToken = jwt.sign({}, `${process.env.JWT_SECRET_ACCESS}`, {
-    expiresIn: '30s',
+    expiresIn: `${process.env.JWT_ACCESS_LIFESPAN}`,
   })
 
-  const { exp } = jwt.decode(accessToken) as { exp: number }
-
-  return { accessToken, exp }
-}
-
-export const createRefreshToken = () => {
-  return jwt.sign({}, `${process.env.JWT_SECRET_REFRESH}`, {
-    expiresIn: '2m',
+  const refreshToken = jwt.sign({}, `${process.env.JWT_SECRET_REFRESH}`, {
+    expiresIn: `${process.env.JWT_REFRESH_LIFESPAN}`,
   })
+
+  const { exp: accessTokenExp } = jwt.decode(accessToken) as { exp: number }
+  const { exp: refreshTokenExp } = jwt.decode(refreshToken) as { exp: number }
+
+  res.cookie('R_TOKEN', refreshToken, {
+    path: '/auth/tokens',
+    httpOnly: true,
+    expires: new Date(refreshTokenExp * 1000),
+  })
+
+  return { accessToken, accessTokenExp }
 }
