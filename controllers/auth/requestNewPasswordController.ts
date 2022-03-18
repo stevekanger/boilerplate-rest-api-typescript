@@ -6,7 +6,6 @@ import User from '../../models/User'
 const requestNewPasswordController = async (req: Request, res: Response) => {
   try {
     const { email } = req.body
-    console.log(email)
 
     if (!email) return res.sendStatus(400)
 
