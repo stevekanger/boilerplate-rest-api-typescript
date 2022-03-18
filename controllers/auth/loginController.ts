@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import User from '../../models/User'
-import { createAccessToken } from '../../helpers/createTokens'
+import jwt from 'jsonwebtoken'
 
 const loginController = async (req: Request, res: Response) => {
   try {
@@ -13,12 +13,21 @@ const loginController = async (req: Request, res: Response) => {
 
     await bcrypt.compare(password, user.password)
 
-    const { accessToken, accessTokenExp } = createAccessToken(res)
+    const accessToken = jwt.sign({}, process.env.JWT_ACCESS_SECRET as string, {
+      expiresIn: process.env.JWT_ACCESS_LIFESPAN,
+    })
+
+    const refreshToken = jwt.sign(
+      {},
+      process.env.JWT_REFRESH_SECRET as string,
+      {
+        expiresIn: process.env.JWT_REFRESH_LIFESPAN,
+      }
+    )
 
     return res.status(200).json({
-      name: user.name,
       accessToken,
-      accessTokenExp,
+      refreshToken,
       msg: 'User successfully logged in',
     })
   } catch (error) {

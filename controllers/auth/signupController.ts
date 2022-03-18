@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import User from '../../models/User'
-import verificationMailer from '../../helpers/verificationMailer'
-import { createVerificationToken } from '../../helpers/createTokens'
-import validateEmail from '../../helpers/validateEmail'
+import sendEmail from '../../utils/sendEmail'
+import validateEmail from '../../utils/validateEmail'
 
 const signupController = async (req: Request, res: Response) => {
   try {
@@ -16,16 +16,25 @@ const signupController = async (req: Request, res: Response) => {
 
     if (user) return res.sendStatus(400)
 
-    const verificationToken = createVerificationToken(email)
     const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
-    await verificationMailer(email, verificationToken, 'verify')
+    const verificationToken = jwt.sign({ email }, hashedPassword, {
+      expiresIn: process.env.EMAIL_VERIFICATION_TIMESPAN,
+    })
+
+    await sendEmail({
+      from: '"Security" <noreply@example.com>',
+      to: email,
+      subject: 'Email Verification',
+      html: `You have signed up for a new account. Please verify your email by following the link below<br>
+       <a href="http://localhost:3000/email-verification?token=${verificationToken}">Email Verification</a>.`,
+    })
 
     const newUser = new User({
       name,
       email,
-      password: hash,
+      password: hashedPassword,
       verified: false,
       verificationToken,
     })

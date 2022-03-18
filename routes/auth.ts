@@ -1,18 +1,18 @@
 import express from 'express'
 import loginController from '../controllers/auth/loginController'
 import signupController from '../controllers/auth/signupController'
-import verificationController from '../controllers/auth/verificationController'
+import emailVerificationController from '../controllers/auth/emailVerificationController'
 import refreshTokensController from '../controllers/auth/refreshTokensController'
-import passwordRequestController from '../controllers/auth/passwordRequestController'
-import passwordResetController from '../controllers/auth/passwordResetController'
+import requestNewPasswordController from '../controllers/auth/requestNewPasswordController'
+import setNewPasswordController from '../controllers/auth/setNewPasswordController'
 
 const router = express.Router()
 
 router.post('/login', loginController)
 router.post('/signup', signupController)
-router.post('/verify', verificationController)
-router.post('/tokens', refreshTokensController)
-router.post('/password-request', passwordRequestController)
-router.post('/password-reset', passwordResetController)
+router.post('/refresh', refreshTokensController)
+router.post('/email-verification', emailVerificationController)
+router.post('/request-new-password', requestNewPasswordController)
+router.post('/set-new-password', setNewPasswordController)
 
 export default router

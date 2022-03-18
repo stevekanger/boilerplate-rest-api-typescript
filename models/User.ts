@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import ms from 'ms'
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
@@ -19,13 +20,17 @@ const UserSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  verificationToken: {
-    type: String,
-  },
   register_date: {
     type: Date,
     default: Date.now,
   },
+})
+
+UserSchema.post('save', async (doc) => {
+  setTimeout(async () => {
+    const user = await User.findOne({ _id: doc._id })
+    if (!user.verified) user.remove()
+  }, ms(`${process.env.EMAIL_VERIFICATION_TIMESPAN}`))
 })
 
 const User = mongoose.model('user', UserSchema)
