@@ -1,6 +1,6 @@
 # Authentication Rest Api Boilerplate
 
-Simple authentication rest api with express and mongoose. Built with typescript.
+Simple authentication rest api with express, mongoose and jwt. Built with typescript.
 
 ## Installation
 

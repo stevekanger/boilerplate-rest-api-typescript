@@ -1,7 +1,7 @@
 {
-  "name": "rest-api-typescript",
+  "name": "rest-api-jwt-auth",
   "version": "1.0.0",
-  "description": "Simple rest api built with typescript",
+  "description": "Simple rest api built with typescript the utilizes jwt for authentication",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
