@@ -26,13 +26,13 @@ const UserSchema = new Schema({
   },
 })
 
+const User = mongoose.model('user', UserSchema)
+
 UserSchema.post('save', async (doc) => {
   setTimeout(async () => {
     const user = await User.findOne({ _id: doc._id })
-    if (!user.verified) user.remove()
+    if (!user?.verified) User.deleteOne({ _id: doc._id })
   }, ms(`${process.env.EMAIL_VERIFICATION_TIMESPAN}`))
 })
-
-const User = mongoose.model('user', UserSchema)
 
 export default User

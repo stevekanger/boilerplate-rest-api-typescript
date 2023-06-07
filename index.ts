@@ -9,7 +9,7 @@ const app = express()
 
 connect(`${process.env.MONGO_URI}`)
   .then(() => {
-    console.log('Connected To Database')
+    console.log('Successfully connected To Database')
   })
   .catch((error) => {
     console.log('Error Connecting To DataBase', error)
@@ -23,5 +23,5 @@ routes(app)
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
-  console.log(`ready at http://localhost:${PORT}`)
+  console.log(`Server ready at http://localhost:${PORT}`)
 })
