@@ -4,6 +4,8 @@ import express from 'express'
 import { connect } from 'mongoose'
 import routes from './routes'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import config from './config'
 
 const app = express()
 
@@ -16,8 +18,13 @@ connect(`${process.env.MONGO_URI}`)
   })
 
 app.use(express.json())
-app.use(cors())
-
+app.use(cookieParser())
+app.use(
+  cors({
+    credentials: true,
+    origin: config.clientDomain,
+  })
+)
 routes(app)
 
 const PORT = process.env.PORT || 5000

@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import ms from 'ms'
+import config from '../config'
+
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
@@ -16,23 +18,24 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  authToken: {
+    type: String,
+    default: '',
+  },
   verified: {
     type: Boolean,
-    required: true,
+    default: false,
   },
-  register_date: {
+  expireAt: {
     type: Date,
     default: Date.now,
+    index: {
+      expireAfterSeconds: ms(config.jwtVerificationLifespan) / 1000,
+      partialFilterExpression: { verified: false },
+    },
   },
 })
 
 const User = mongoose.model('user', UserSchema)
-
-UserSchema.post('save', async (doc) => {
-  setTimeout(async () => {
-    const user = await User.findOne({ _id: doc._id })
-    if (!user?.verified) User.deleteOne({ _id: doc._id })
-  }, ms(`${process.env.EMAIL_VERIFICATION_TIMESPAN}`))
-})
 
 export default User

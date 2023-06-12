@@ -1,13 +1,16 @@
 import nodemailer from 'nodemailer'
 
-type Args = {
+export default async function sendEmail({
+  from,
+  to,
+  subject,
+  html,
+}: {
   from: string
   to: string
   subject: string
   html: string
-}
-
-const sendEmail = async ({ from, to, subject, html }: Args) => {
+}) {
   try {
     // Only used for testing purposes remove when adding your own smtp client settings
     let testMailerAccount = await nodemailer.createTestAccount()
@@ -30,5 +33,3 @@ const sendEmail = async ({ from, to, subject, html }: Args) => {
     throw new Error('There was an error sending email')
   }
 }
-
-export default sendEmail

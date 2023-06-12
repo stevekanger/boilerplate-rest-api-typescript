@@ -1,6 +1,6 @@
 # Authentication Rest Api Boilerplate
 
-Simple authentication rest api with express, mongoose and jwt. Built with typescript.
+Simple authentication rest api with express, mongoose and jwt. Built with typescript. This authentication uses access and refresh tokens. The refresh token will be validated against the mongodb database. (Redis would be more performant for large scale).
 
 ## Installation
 
@@ -14,34 +14,61 @@ npm install
 
 ### Replace the information in the `.env` file with your variables.
 
-Note: your access token should have a shorter lifespan than the refresh token.
-
 ```
 # Mongo db uri
-MONGO_URI=mongodb://localhost/example_database
+MONGO_URI=mongodb://127.0.0.1:27017/example_database
 
-# JSON Web token access string
-JWT_ACCESS_SECRET=YOUR_JWT_ACCESS_SECRET_CODE_HERE
+# JSON web token secret used to sign jwt
+JWT_SECRET=YOUR_JWT_SECRET_CODE_HERE
 
-# JSON Web token refresh string
-JWT_REFRESH_SECRET=YOUR_JWT_REFRESH_SECRET_CODE_HERE
-
-# JSON Web token verification string
-JWT_VERIFICATION_SECRET=YOUR_JWT_VERIFICATION_SECRET_CODE_HERE
-
-# Your json web token access lifespan
-JWT_ACCESS_LIFESPAN=5s
-
-# Your json web token refresh lifespan
-JWT_REFRESH_LIFESPAN=60s
-
-# The timespan in which a user has the ability to verify their account or reset passowrd
-EMAIL_VERIFICATION_TIMESPAN=60m
 ```
 
-### Replace your smtp settings in utils/sendEmail
+### Replace your token lifespans and client domain in the `config.ts` file
 
-Right now the email is set to nodemailers test client. Change these variables to your smpt client for production.
+Your refresh tokens should be longer lived than the access tokens. Your final config should be something like the following.
+
+```javascript
+const config: TConfig = {
+  jwtAccessLifespan: '15m',
+  jwtRefreshLifespan: '1w',
+  jwtVerificationLifespan: '1d',
+  clientDomain: 'example.com',
+}
+```
+
+### Replace your smtp settings in `utils/sendEmail.ts`
+
+Right now the email is set to nodemailers test client. Change these variables to your smpt client for production. It should look something like the following when done.
+
+```javascript
+export default async function sendEmail({
+  from,
+  to,
+  subject,
+  html,
+}: {
+  from: string
+  to: string
+  subject: string
+  html: string
+}) {
+  try {
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.your-email-host.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'Your Username',
+        pass: 'Your password',
+      },
+    })
+
+    await transporter.sendMail({ from, to, subject, html })
+  } catch (error) {
+    throw new Error('There was an error sending email')
+  }
+}
+```
 
 ## Commands
 

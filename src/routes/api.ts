@@ -1,9 +1,9 @@
 import express from 'express'
-import verifyAccessToken from '../middleware/verifyAccessToken'
-import apiController from '../controllers/api/apiController'
+import auth from '../middleware/auth'
+import api from '../controllers/api/api'
 
 const router = express.Router()
 
-router.get('/', verifyAccessToken, apiController)
+router.get('/', auth, api)
 
 export default router
