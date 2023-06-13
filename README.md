@@ -5,7 +5,7 @@ Simple authentication rest api with express, mongoose and jwt. Built with typesc
 ## Installation
 
 ```bash
-git clone https://github.com/stevekanger/rest-api-boilerplate-typescript.git
+git clone https://github.com/stevekanger/nodejs-api-jwt-auth.git
 ```
 
 ```bash
