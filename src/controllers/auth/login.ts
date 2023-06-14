@@ -17,7 +17,14 @@ export default async function loginController(req: Request, res: Response) {
       })
     }
 
-    await bcrypt.compare(password, user.password)
+    const compared = await bcrypt.compare(password, user.password)
+
+    if (!compared) {
+      return res.status(401).json({
+        success: false,
+        msg: 'Unauthorized',
+      })
+    }
 
     const accessToken = createToken('access', user._id)
     const refreshToken = createToken('refresh', user._id)
