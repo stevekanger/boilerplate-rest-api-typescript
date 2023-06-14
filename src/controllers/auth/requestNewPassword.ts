@@ -1,14 +1,10 @@
 import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
 import sendEmail from '../../utils/email/sendEmail'
 import User from '../../models/User'
 import config from '../../config'
 import createToken from '../../utils/auth/createToken'
 
-export default async function requestNewPasswordController(
-  req: Request,
-  res: Response
-) {
+export default async function requestNewPassword(req: Request, res: Response) {
   try {
     const { email } = req.body
 

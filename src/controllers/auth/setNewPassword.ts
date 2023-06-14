@@ -5,10 +5,7 @@ import User from '../../models/User'
 import sendEmail from '../../utils/email/sendEmail'
 import config from '../../config'
 
-export default async function setNewPasswordController(
-  req: Request,
-  res: Response
-) {
+export default async function setNewPassword(req: Request, res: Response) {
   try {
     const authHeader = req.get('Authorization')
     const token = authHeader?.split(' ')[1] as string
